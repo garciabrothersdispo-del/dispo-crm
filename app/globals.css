@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0c0c0e;
+  --bg2: #141417;
+  --bg3: #1c1c21;
+  --bg4: #242429;
+  --bg5: #2c2c33;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --border3: rgba(255,255,255,0.18);
+  --text: #eeeef2;
+  --text2: #9898aa;
+  --text3: #5a5a6e;
+  --accent: #22d98e;
+  --accent2: #1ab87a;
+  --accent-dim: rgba(34,217,142,0.1);
+  --accent-border: rgba(34,217,142,0.25);
+  --blue: #4f9eff;
+  --blue-dim: rgba(79,158,255,0.1);
+  --amber: #f5a623;
+  --amber-dim: rgba(245,166,35,0.1);
+  --red: #f05a5a;
+  --red-dim: rgba(240,90,90,0.1);
+  --purple: #a78bfa;
+  --teal: #2dd4bf;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font-sans, 'DM Sans'), sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg5); border-radius: 3px; }
+
+/* Form elements */
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent) !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.animate-fade-in { animation: fadeIn 0.15s ease; }
+.animate-slide-in { animation: slideInRight 0.2s ease; }
+.animate-modal-in { animation: modalIn 0.18s ease; }
+
+/* Pipeline stage scroll */
+.pipeline-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 16px 20px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.pipeline-scroll::-webkit-scrollbar { height: 6px; }
+
+/* Deal card stripe */
+.deal-stripe {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
+}
+
+/* Input base styles */
+.input-base {
+  width: 100%;
+  padding: 8px 11px;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  background: var(--bg3);
+  color: var(--text);
+  transition: border-color 0.12s;
+}
+
+.input-base::placeholder { color: var(--text3); }
+.input-base:focus { border-color: var(--accent); background: var(--bg4); }
+
+/* Button base */
+.btn-base {
+  padding: 6px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.12s;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.btn-base:hover { background: var(--bg4); border-color: var(--border3); }
+
+/* Mono font utility */
+.font-mono { font-family: var(--font-mono, 'DM Mono'), monospace; }
