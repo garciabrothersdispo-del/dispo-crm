@@ -53,7 +53,7 @@ export default function PipelinesPage() {
 
   async function createTasksForStage(dealId: string, pipeline: string, stage: string) {
     const pip = PIPELINES[pipeline as PipKey]
-    const stageTasks = pip?.tasksByStage?.[stage as keyof typeof pip.tasksByStage] || []
+    const stageTasks: string[] = (pip?.tasksByStage?.[stage as keyof typeof pip.tasksByStage] as string[] | undefined) || []
     if (!stageTasks.length) return
     const deadline = getDeadline(24)
     const toInsert = (stageTasks as string[]).map(text => ({
