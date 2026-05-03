@@ -6,7 +6,7 @@ const { app, BrowserWindow, Menu } = require('electron')
 const path = require('path')
 
 // ── Change this to your Vercel URL after deploying ──
-const APP_URL = 'https://your-dispo-crm.vercel.app'
+const APP_URL = 'https://dispo-crm-theta.vercel.app'
 // For local dev, use: 'http://localhost:3000'
 
 function createWindow() {

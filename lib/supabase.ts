@@ -169,8 +169,10 @@ export type Task = {
   deal_id: string
   stage: string
   text: string
+  description: string | null
   done: boolean
   deadline: string | null
+  due_time: string | null
   auto_generated: boolean
   completed_by: string | null
   completed_at: string | null
@@ -197,6 +199,7 @@ export type Buyer = {
   price_range: string | null
   city: string | null
   zip_codes: string | null
+  counties: string | null
   close_timeline: string | null
   proof_of_funds: string | null
   tags: string[]

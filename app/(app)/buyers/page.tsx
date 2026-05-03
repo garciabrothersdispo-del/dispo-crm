@@ -20,7 +20,7 @@ export default function BuyersPage() {
   const [userId, setUserId] = useState('')
   const [toast, setToast] = useState('')
 
-  const emptyForm = { fname: '', lname: '', phone: '', email: '', company: '', rank: 'Unqualified' as Buyer['rank'], type: 'Fix & Flip', range: '', city: '', zips: '', close: '', pof: 'Not Verified', tags: '', notes: '' }
+  const emptyForm = { fname: '', lname: '', phone: '', email: '', company: '', rank: 'Unqualified' as Buyer['rank'], type: 'Fix & Flip', range: '', city: '', zips: '', counties: '', close: '', pof: 'Not Verified', tags: '', notes: '' }
   const [form, setForm] = useState(emptyForm)
 
   function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(''), 2500) }
@@ -61,7 +61,7 @@ export default function BuyersPage() {
     const payload = {
       first_name: form.fname, last_name: form.lname, phone: form.phone, email: form.email,
       company: form.company, rank: form.rank, buyer_type: form.type, price_range: form.range,
-      city: form.city, zip_codes: form.zips, close_timeline: form.close, proof_of_funds: form.pof,
+      city: form.city, zip_codes: form.zips, counties: form.counties, close_timeline: form.close, proof_of_funds: form.pof,
       tags, notes: form.notes,
     }
     if (editId) {
@@ -79,7 +79,7 @@ export default function BuyersPage() {
   }
 
   function openEdit(b: Buyer) {
-    setForm({ fname: b.first_name, lname: b.last_name || '', phone: b.phone || '', email: b.email || '', company: b.company || '', rank: b.rank, type: b.buyer_type || 'Fix & Flip', range: b.price_range || '', city: b.city || '', zips: b.zip_codes || '', close: b.close_timeline || '', pof: b.proof_of_funds || 'Not Verified', tags: (b.tags || []).join(', '), notes: b.notes || '' })
+    setForm({ fname: b.first_name, lname: b.last_name || '', phone: b.phone || '', email: b.email || '', company: b.company || '', rank: b.rank, type: b.buyer_type || 'Fix & Flip', range: b.price_range || '', city: b.city || '', zips: b.zip_codes || '', counties: b.counties || '', close: b.close_timeline || '', pof: b.proof_of_funds || 'Not Verified', tags: (b.tags || []).join(', '), notes: b.notes || '' })
     setEditId(b.id)
     setShowModal(true)
   }
@@ -225,7 +225,9 @@ export default function BuyersPage() {
                       {b.phone && <div style={{ display: 'flex', gap: '6px' }}><span style={{ color: 'var(--text3)', fontFamily: 'var(--font-mono)', fontSize: '10px', minWidth: '52px', paddingTop: '1px' }}>Phone</span><span style={{ color: 'var(--text2)' }}>{b.phone}</span></div>}
                       {b.email && <div style={{ display: 'flex', gap: '6px' }}><span style={{ color: 'var(--text3)', fontFamily: 'var(--font-mono)', fontSize: '10px', minWidth: '52px', paddingTop: '1px' }}>Email</span><span style={{ color: 'var(--text2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.email}</span></div>}
                       {b.price_range && <div style={{ display: 'flex', gap: '6px' }}><span style={{ color: 'var(--text3)', fontFamily: 'var(--font-mono)', fontSize: '10px', minWidth: '52px', paddingTop: '1px' }}>Buy box</span><span style={{ color: 'var(--text2)' }}>{b.price_range}</span></div>}
-                      {(b.city || b.zip_codes) && <div style={{ display: 'flex', gap: '6px' }}><span style={{ color: 'var(--text3)', fontFamily: 'var(--font-mono)', fontSize: '10px', minWidth: '52px', paddingTop: '1px' }}>Area</span><span style={{ color: 'var(--text2)' }}>{[b.city, b.zip_codes].filter(Boolean).join(' · ')}</span></div>}
+                      {b.city && <div style={{ display: 'flex', gap: '6px' }}><span style={{ color: 'var(--text3)', fontFamily: 'var(--font-mono)', fontSize: '10px', minWidth: '52px', paddingTop: '1px' }}>Cities</span><span style={{ color: 'var(--text2)' }}>{b.city}</span></div>}
+                      {b.counties && <div style={{ display: 'flex', gap: '6px' }}><span style={{ color: 'var(--text3)', fontFamily: 'var(--font-mono)', fontSize: '10px', minWidth: '52px', paddingTop: '1px' }}>Counties</span><span style={{ color: 'var(--text2)' }}>{b.counties}</span></div>}
+                      {b.zip_codes && <div style={{ display: 'flex', gap: '6px' }}><span style={{ color: 'var(--text3)', fontFamily: 'var(--font-mono)', fontSize: '10px', minWidth: '52px', paddingTop: '1px' }}>Zips</span><span style={{ color: 'var(--text2)' }}>{b.zip_codes}</span></div>}
                       {b.close_timeline && <div style={{ display: 'flex', gap: '6px' }}><span style={{ color: 'var(--text3)', fontFamily: 'var(--font-mono)', fontSize: '10px', minWidth: '52px', paddingTop: '1px' }}>Close</span><span style={{ color: 'var(--text2)' }}>{b.close_timeline}</span></div>}
                       {b.proof_of_funds && b.proof_of_funds !== 'Not Verified' && <div style={{ display: 'flex', gap: '6px' }}><span style={{ color: 'var(--text3)', fontFamily: 'var(--font-mono)', fontSize: '10px', minWidth: '52px', paddingTop: '1px' }}>POF</span><span style={{ color: 'var(--accent)' }}>{b.proof_of_funds}</span></div>}
                       {b.notes && <div style={{ display: 'flex', gap: '6px' }}><span style={{ color: 'var(--text3)', fontFamily: 'var(--font-mono)', fontSize: '10px', minWidth: '52px', paddingTop: '1px' }}>Notes</span><span style={{ color: 'var(--text2)', fontStyle: 'italic' }}>{b.notes}</span></div>}
@@ -292,19 +294,23 @@ export default function BuyersPage() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-              <div>
-                <label style={{ fontSize: '10px', color: 'var(--text3)', display: 'block', marginBottom: '4px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Price Range</label>
-                <input className="input-base" value={form.range} onChange={e => setForm(p => ({ ...p, range: e.target.value }))} placeholder="$50k–$150k" />
-              </div>
-              <div>
-                <label style={{ fontSize: '10px', color: 'var(--text3)', display: 'block', marginBottom: '4px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>City</label>
-                <input className="input-base" value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} placeholder="Dallas" />
-              </div>
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ fontSize: '10px', color: 'var(--text3)', display: 'block', marginBottom: '4px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Price Range</label>
+              <input className="input-base" value={form.range} onChange={e => setForm(p => ({ ...p, range: e.target.value }))} placeholder="$50k–$150k" />
             </div>
 
             <div style={{ marginBottom: '12px' }}>
-              <label style={{ fontSize: '10px', color: 'var(--text3)', display: 'block', marginBottom: '4px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Zip Codes</label>
+              <label style={{ fontSize: '10px', color: 'var(--text3)', display: 'block', marginBottom: '4px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Cities (comma separated)</label>
+              <input className="input-base" value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} placeholder="Dallas, Fort Worth, Arlington" />
+            </div>
+
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ fontSize: '10px', color: 'var(--text3)', display: 'block', marginBottom: '4px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Counties (comma separated)</label>
+              <input className="input-base" value={form.counties} onChange={e => setForm(p => ({ ...p, counties: e.target.value }))} placeholder="Dallas County, Tarrant County" />
+            </div>
+
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ fontSize: '10px', color: 'var(--text3)', display: 'block', marginBottom: '4px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Zip Codes (comma separated)</label>
               <input className="input-base" value={form.zips} onChange={e => setForm(p => ({ ...p, zips: e.target.value }))} placeholder="75201, 75202, 75205" />
             </div>
 

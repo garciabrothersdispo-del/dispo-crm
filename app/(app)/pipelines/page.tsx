@@ -17,6 +17,8 @@ export default function PipelinesPage() {
   const [newNote, setNewNote] = useState('')
   const [showAddDeal, setShowAddDeal] = useState(false)
   const [showMove, setShowMove] = useState(false)
+  const [showAddTask, setShowAddTask] = useState(false)
+  const [newTask, setNewTask] = useState({ title: '', description: '', date: '', time: '' })
   const [userId, setUserId] = useState<string>('')
   const [toast, setToast] = useState('')
 
@@ -146,6 +148,24 @@ export default function PipelinesPage() {
       })
       return next
     })
+  }
+
+  async function addManualTask() {
+    if (!newTask.title.trim() || !activeDeal) return
+    const stage = activeDeal.stage || 'Manual'
+    await supabase.from('tasks').insert({
+      deal_id: activeDeal.id,
+      stage,
+      text: newTask.title.trim(),
+      description: newTask.description.trim() || null,
+      done: false,
+      deadline: newTask.date || null,
+      due_time: newTask.time || null,
+      auto_generated: false,
+    })
+    setNewTask({ title: '', description: '', date: '', time: '' })
+    setShowAddTask(false)
+    showToast('Task added ✓')
   }
 
   async function openDeal(deal: Deal) {
@@ -352,6 +372,9 @@ export default function PipelinesPage() {
               {/* TASKS TAB */}
               {activeTab === 'tasks' && (
                 <div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '14px' }}>
+                    <button onClick={() => setShowAddTask(true)} style={{ padding: '6px 14px', borderRadius: '8px', background: 'var(--accent)', color: '#000', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 700 }}>+ Add Task</button>
+                  </div>
                   {dealTasks.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text3)' }}>
                       <div style={{ fontSize: '28px', marginBottom: '10px' }}>✓</div>
@@ -374,10 +397,13 @@ export default function PipelinesPage() {
                                 <div onClick={() => toggleTask(task.id)} style={{ width: '16px', height: '16px', borderRadius: '4px', border: `1px solid ${task.done ? 'var(--accent)' : overdue ? 'var(--red)' : 'var(--border3)'}`, background: task.done ? 'var(--accent)' : 'var(--bg4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px', transition: 'all 0.12s' }}>
                                   {task.done && <span style={{ fontSize: '10px', color: '#000', fontWeight: 700 }}>✓</span>}
                                 </div>
-                                <div style={{ flex: 1, fontSize: '12px', textDecoration: task.done ? 'line-through' : 'none', color: task.done ? 'var(--text3)' : 'var(--text)' }}>{task.text}</div>
-                                {task.deadline && (
-                                  <div style={{ fontSize: '10px', fontFamily: 'var(--font-mono)', color: overdue ? 'var(--red)' : dueToday ? 'var(--amber)' : 'var(--text3)', whiteSpace: 'nowrap' }}>
-                                    {overdue ? 'Overdue · ' : dueToday ? 'Due today · ' : ''}{task.deadline}
+                                <div style={{ flex: 1 }}>
+                                  <div style={{ fontSize: '12px', textDecoration: task.done ? 'line-through' : 'none', color: task.done ? 'var(--text3)' : 'var(--text)' }}>{task.text}</div>
+                                  {task.description && <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px', lineHeight: 1.4 }}>{task.description}</div>}
+                                </div>
+                                {(task.deadline || task.due_time) && (
+                                  <div style={{ fontSize: '10px', fontFamily: 'var(--font-mono)', color: overdue ? 'var(--red)' : dueToday ? 'var(--amber)' : 'var(--text3)', whiteSpace: 'nowrap', textAlign: 'right' }}>
+                                    {overdue ? 'Overdue · ' : dueToday ? 'Due today · ' : ''}{task.deadline}{task.due_time ? ` @ ${task.due_time}` : ''}
                                   </div>
                                 )}
                               </div>
@@ -429,6 +455,40 @@ export default function PipelinesPage() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ADD TASK MODAL */}
+      {showAddTask && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }} onClick={e => { if (e.target === e.currentTarget) setShowAddTask(false) }}>
+          <div className="animate-modal-in" style={{ background: 'var(--bg2)', border: '1px solid var(--border2)', borderRadius: '14px', padding: '22px 24px', width: '440px', maxWidth: '96vw' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+              <div style={{ fontSize: '15px', fontWeight: 700 }}>Add Task</div>
+              <button onClick={() => setShowAddTask(false)} style={{ background: 'none', border: 'none', color: 'var(--text3)', cursor: 'pointer', fontSize: '20px' }}>×</button>
+            </div>
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ fontSize: '10px', color: 'var(--text3)', display: 'block', marginBottom: '4px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Title *</label>
+              <input className="input-base" value={newTask.title} onChange={e => setNewTask(p => ({ ...p, title: e.target.value }))} placeholder="e.g. Follow up with buyer" autoFocus />
+            </div>
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ fontSize: '10px', color: 'var(--text3)', display: 'block', marginBottom: '4px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Description</label>
+              <textarea className="input-base" rows={3} value={newTask.description} onChange={e => setNewTask(p => ({ ...p, description: e.target.value }))} placeholder="Optional details..." style={{ resize: 'none' }} />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+              <div>
+                <label style={{ fontSize: '10px', color: 'var(--text3)', display: 'block', marginBottom: '4px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Due Date</label>
+                <input className="input-base" type="date" value={newTask.date} onChange={e => setNewTask(p => ({ ...p, date: e.target.value }))} />
+              </div>
+              <div>
+                <label style={{ fontSize: '10px', color: 'var(--text3)', display: 'block', marginBottom: '4px', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Due Time</label>
+                <input className="input-base" type="time" value={newTask.time} onChange={e => setNewTask(p => ({ ...p, time: e.target.value }))} />
+              </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+              <button onClick={() => setShowAddTask(false)} className="btn-base">Cancel</button>
+              <button onClick={addManualTask} style={{ padding: '7px 16px', borderRadius: '8px', background: 'var(--accent)', color: '#000', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 700 }}>Add Task</button>
             </div>
           </div>
         </div>

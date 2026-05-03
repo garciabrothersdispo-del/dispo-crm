@@ -49,7 +49,7 @@ export default function DashboardPage() {
   const sum = (key: keyof Deal) => deals.reduce((a, d) => a + (Number(d[key]) || 0), 0)
   const assigned = deals.filter(d => d.pipeline === 'assigned' || d.pipeline === 'closed')
   const closed = deals.filter(d => d.pipeline === 'closed')
-  const active = deals.filter(d => !['closed'].includes(d.pipeline))
+  const active = deals.filter(d => !['closed'].includes(d.pipeline) && !(d.pipeline === 'general' && d.stage === 'Dead'))
   const cancelled = deals.filter(d => d.stage === 'Dead' || d.pipeline === 'ghosted')
   const projProfit = active.reduce((a, d) => a + parseMoney(d.projected_profit), 0)
   const closedProfit = closed.reduce((a, d) => a + parseMoney(d.closed_for || d.projected_profit), 0)
