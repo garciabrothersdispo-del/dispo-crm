@@ -207,6 +207,24 @@ export type Buyer = {
   created_at: string
 }
 
+export type TitleCompany = {
+  id: string
+  created_by: string | null
+  name: string
+  state: string
+  counties_covered: string | null
+  deals_done: number
+  deal_types: string[]
+  escrow_officer: string | null
+  email: string | null
+  phone: string | null
+  hours_of_operation: string | null
+  days_of_operation: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
 export type ActivityLog = {
   id: string
   user_id: string
